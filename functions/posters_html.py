@@ -44,20 +44,26 @@ def compose():
                 element_index = index
         
         # HTML COMPILING
-        list_poster_template[element_index] = '<div align="center">'
+        list_poster_template[element_index] = '<div align="center">\n'
         counter = 1
         for index, item in enumerate(poster_links_list):
-            list_poster_template[element_index] += f'<img src={item} hspace="20">'
+            list_poster_template[element_index] += f'<img src={item} hspace="20">\n'
             if index != 0 and counter % poster_per_row == 0 and poster_per_row != 1:
-                list_poster_template[element_index] += '</div><br><div align="center">'
+                list_poster_template[element_index] += '</div><br><div align="center">\n'
             if poster_per_row == 1:
-                list_poster_template[element_index] += '</div><br><div align="center">'
+                list_poster_template[element_index] += '</div><br><div align="center">\n'
             if index+1 == len(poster_links_list):
-                list_poster_template[element_index] += '</div>'
+                list_poster_template[element_index] += '</div>\n'
             counter += 1
 
-        # EXAMPLE
-        # '<div align="center"><img src="https://image.tmdb.org/t/p/w200/wAv2tBzcTlzrRIKlM7s2cjnpxwA.jpg" hspace="20"><img src="https://image.tmdb.org/t/p/w200/wAv2tBzcTlzrRIKlM7s2cjnpxwA.jpg"></div>'
+        # HTML COMPILING RESULT - EXAMPLE
+        # '<div align="center">
+        # <img src="https://image.tmdb.org/t/p/w200/wAv2tBzcTlzrRIKlM7s2cjnpxwA.jpg" hspace="20">
+        # <img src="https://image.tmdb.org/t/p/w200/wAv2tBzcTlzrRIKlM7s2cjnpxwA.jpg" hspace="20">
+        # ..
+        # </div><br><div align="center">    # EXAMPLE: one picture in the last row
+        # <img src="https://image.tmdb.org/t/p/w200/wAv2tBzcTlzrRIKlM7s2cjnpxwA.jpg" hspace="20">
+        # </div>'
 
         # SAVING HTML
         file = open(path_posters_html, 'w', encoding="utf-8")
