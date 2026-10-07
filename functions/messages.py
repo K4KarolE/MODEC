@@ -12,7 +12,8 @@ popup_message_dic = {
     'excel_cant_open':'Was not able to launch the excel sheet.',
     'bye_bye':'You just blew it honey!',
     'runtime':'Sorry, no runtime data is available.',
-    'api_key_missing': 'No API key is found in the api_key.txt!'
+    'api_key_missing': 'No API key is found in the api_key.txt!',
+    'data_coll': 'The data collection failed!'
     }
 
 def error_pop_up(popup_message_dic_key):

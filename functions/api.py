@@ -39,7 +39,7 @@ def data_collection():
         if counter == 2:
             messages.error_pop_up('bye_bye')
             sys.exit()
- 
+
     link_split= link.split('/')
     for i in link_split:
         if i[0:2] == 'tt':
@@ -97,24 +97,22 @@ def data_collection():
     f = open(path_json('details.json'))
     details_dic = json.load(f)
 
-    ''' ERROR HANDLING '''
-    try:
-        if details_dic['success'] == False:
-            messages.error_pop_up_straight(details_dic['status_message'])
-            return
-    except:
-        pass
+    # VERIFY RESPONSE
+    if details_dic.get('success') == False:
+        messages.error_pop_up_straight(details_dic['status_message'])
+        return
 
     # GENRES
     genres = []
     for item in details_dic['genres']:
         genres.append(item['name'])
+
     # RELEASE YEAR
     if media_type == 'movie':
-        year_of_release = details_dic['release_date'][0:4]
+        year_of_release = details_dic['release_date'] and details_dic['release_date'][0:4]
     else:
-        first_air_date = details_dic['first_air_date'][0:4]
-        last_air_date = details_dic['last_air_date'][0:4]
+        first_air_date = details_dic['first_air_date'] and details_dic['first_air_date'][0:4]
+        last_air_date = details_dic['last_air_date'] and details_dic['last_air_date'][0:4]
         if last_air_date == [] or first_air_date == last_air_date:
             year_of_release = first_air_date
         else:
@@ -125,18 +123,19 @@ def data_collection():
     else:
         if details_dic['episode_run_time']:
             runtime = details_dic['episode_run_time'][0]
-        elif details_dic['last_episode_to_air']['runtime']:
-            runtime = details_dic['last_episode_to_air']['runtime']
+        elif details_dic['last_episode_to_air']:
+            runtime = details_dic['last_episode_to_air'].get('runtime')
+        elif details_dic['next_episode_to_air']:
+            runtime = details_dic['next_episode_to_air'].get('runtime')
         else:
             runtime = 0
             messages.error_pop_up('runtime')
-    
+
     lengthHour = int(runtime/60)    # if runtime < 60 -> lengthHour = 0 addressed in excel_sheet.py, will leave it None
     lengthMinute = runtime%60
 
 
-
-### CREDITS
+    ### CREDITS
     link_credits = f'https://api.themoviedb.org/3/{media_type}/{id}/credits?api_key={api_key}&language=en-US'
     response = requests.get(link_credits)
 
@@ -146,6 +145,11 @@ def data_collection():
 
     f = open(path_json('credits.json'))
     credits_dic = json.load(f)
+
+    # VERIFY RESPONSE
+    if credits_dic.get('success') == False:
+        messages.error_pop_up_straight(credits_dic['status_message'])
+        return
 
     # ACTORS
     try:
@@ -162,13 +166,13 @@ def data_collection():
         directors = []
         if media_type == 'movie':
             for item in credits_dic['crew']:
-                    if item["job"] == "Director":
-                        directors.append(item["name"])
+                if item["job"] == "Director":
+                    directors.append(item["name"])
     except:
         pass
 
 
-### IMAGES
+    ### IMAGES
     if settings_data['poster_open_in_new_tab'] == 1:
         link_images = f'https://api.themoviedb.org/3/{media_type}/{id}/images?api_key={api_key}'
         response = requests.get(link_images)
@@ -180,13 +184,18 @@ def data_collection():
         f = open(path_json('images.json'))
         images_dic = json.load(f)
 
+        # VERIFY RESPONSE
+        if images_dic.get('success') == False:
+            messages.error_pop_up_straight(images_dic['status_message'])
+            return
+
         # POSTERS
         posters = []
         for item in images_dic["posters"]:
             if item["iso_639_1"] == "en":
                 posters.append(item["file_path"])
 
-        poster_links = []    
+        poster_links = []
         selected_poster_size = settings_data['poster_size']     # Small, Medium...
         selected_poster_size_value = settings_data["poster_size_options"][selected_poster_size]     # w200 - Small, w500 - Medium, original - Large
         for item in posters:
