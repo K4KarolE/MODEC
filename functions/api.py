@@ -131,6 +131,7 @@ def data_collection():
             runtime = 0
             messages.error_pop_up('runtime')
 
+    if runtime == None: runtime = 0
     lengthHour = int(runtime/60)    # if runtime < 60 -> lengthHour = 0 addressed in excel_sheet.py, will leave it None
     lengthMinute = runtime%60
 
